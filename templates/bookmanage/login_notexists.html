@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% block content %}{% endblock %}<br/>
+<form method="post" action="{% url "bookmanage:index" %}">
+    {% csrf_token %}
+    <input type="submit" value="back"/>
+</form>
+</body>
+</html>

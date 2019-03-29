@@ -1,0 +1,154 @@
+
+
+{% extends 'base.html' %}
+{% block css %}
+    <style>
+        #filter {
+            padding: 50px;
+        }
+
+        #query .row > div:nth-of-type(2) {
+            padding: 50px;
+        }
+    </style>
+{% endblock css %}
+{% block body %}
+    {#{% url "bookmanage:query_books" %}#}
+    {#    query#}
+    <section id="query">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5" id="filter">
+                    <form action="#" method="post">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label for="title">书名</label>
+                            <input type="text" class="form-control" name="title" id="title"
+                                   placeholder="请输入书名">
+                        </div>
+                        <div class="form-group">
+                            <label for="author">作者</label>
+                            <input type="text" class="form-control" name="author" id="author"
+                                   placeholder="请输入作者">
+                        </div>
+                        <div class="form-group">
+                            <label for="press">出版社</label>
+                            <input type="text" class="form-control" name="press" id="press"
+                                   placeholder="请输入出版社">
+                        </div>
+                        <div class="form-group">
+                            <label for="year">出版年份</label>
+                            <input type="text" class="form-control" name="year" id="year"
+                                   placeholder="请输入出版年份">
+                        </div>
+                        <div class="form-group">
+                            <label for="cat">类别</label>
+                            <input type="text" class="form-control" name="cat" id="cat" placeholder="请输入类别">
+                        </div>
+                        <div class="form-group">
+                            <label for="price">价格</label>
+                            <input type="text" class="form-control" name="price" id="price"
+                                   placeholder="请输入价格">
+                        </div>
+                        <div class="form-group">
+                            <label for="total">总量</label>
+                            <input type="text" class="form-control" name="total" id="total"
+                                   placeholder="请输入总量">
+                        </div>
+                        <div class="form-group">
+                            <label for="stock">库存</label>
+                            <input type="text" class="form-control" name="stock" id="stock"
+                                   placeholder="请输入库存">
+                        </div>
+                        <button type="button" id="queryBtn" class="btn btn-secondary float-right">查询</button>
+                    </form>
+                </div>
+                <div class="col-md-7">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>图书信息</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                <th>书名</th>
+                                <th>作者</th>
+                                <th>出版社</th>
+                                <th>类别</th>
+                                <th>价格</th>
+                                <th>总量</th>
+                                <th>库存</th>
+                                </thead>
+                                <tbody id="target_books">
+                                </tbody>
+                            </table>
+                            <div id="page_con"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+
+
+    <script>
+
+    </script>
+
+{% endblock %}
+{% block js %}
+    <script>
+        $(function () {
+            var $tbody = $('#target_books');
+            var l = [];
+            $('#queryBtn').bind('click', function () {
+                var j = {
+                    "title": $('#title').val(), "author": $('#author').val(), "press": $('#press').val(),
+                    "stock": $('#stock').val(), "total": $('#total').val(), "price": $('#price').val(),
+                    "category": $('#cat').val(), "year": $('#year').val(), "csrfmiddlewaretoken": '{{ csrf_token }}'
+                };
+
+                $.post('/query/books/', j, function (data) {
+                    $('#page_con').empty();
+                    $tbody.empty();
+                    l.splice(0, l.length);
+                    if (data.data.length == 0)
+                        return;
+                    $.each(data.data, function (index, book) {
+
+                        l[index] = "<tr><td>" + book['title'] + "</td><td>" + book['author'] + "</td><td>" + book['press'] + "</td><td>" + book['category'] + "</td><td>" + book['price'] + "</td><td>" + book['total'] + "</td><td>" + book['stock'] + "</td></tr>";
+
+                    })
+                    $('#page_con').pagination({
+                        dataSource: l,
+                        pageSize: 10,
+                        showGoInput: true,
+                        showGoButton: true,
+                        callback: function (data, pagination) {
+                            var html = "";
+                            var pageSize = pagination.pageSize;
+                            for (var i = pageSize * (pagination.pageNumber - 1); i < pageSize * pagination.pageNumber; i++) {
+                                html += l[i];
+                            }
+                            $('#target_books').html(html);
+                        }
+                    })
+
+
+                })
+
+
+            })
+            $(document).keyup(function (event) {
+                if (event.keyCode == 13) {
+                    $("#queryBtn").trigger("click");
+                }
+            });
+
+        })
+
+    </script>
+{% endblock %}

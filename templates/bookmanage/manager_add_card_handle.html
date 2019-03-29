@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form method="post" action="{% url "bookmanage:manager_add_card" %}">
+    {% csrf_token %}
+    name:<input type="text" name="name"/><br/>
+    department:<input type="text" name="department"/><br/>
+    <input type="radio" name="type" value="student" checked="checked"/>student
+    <input type="radio" name="type" value="teacher"/>teacher
+    <input type="submit" value="submit"/>
+</form>
+</body>
+</html>

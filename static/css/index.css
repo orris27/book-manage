@@ -1,0 +1,41 @@
+
+/**
+index.html
+ */
+/*homepage*/
+#homepage {
+    /*background: url('/static/img/book_banner.jpg') no-repeat;*/
+    /*background-size:cover;*/
+    /*height:800px;*/
+}
+#homepage #imgCol{
+    position:relative;;
+}
+#homepage #imgCol>img{
+    /*position:absolute;*/
+    /*top:50%;*/
+    /*left:50%;*/
+    /*margin-top: -105px;*/
+    /*margin-left: -401px;*/
+    margin-top: 120px;
+}
+#homepage #loginCol{
+    padding-top: 68px;
+    padding-bottom: 68px;
+}
+#homepage #loginForm{
+    padding:40px;
+}
+#homepage #loginForm label{
+}
+#homepage #loginForm input{
+    margin:10px 0;
+}
+#homepage #loginForm button,#homepage #loginForm a{
+    margin-right:30px;
+    margin-top:10px;
+}
+
+#homepage #loginForm small {
+    display: none;
+}

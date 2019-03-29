@@ -1,0 +1,9 @@
+#manager_create #manager_create_col{
+    padding:50px;
+}
+#manager_create #manager_create_col .card{
+    /*margin:0 200px;*/
+}
+#manager_create #manager_create_col small{
+    display:none;
+}

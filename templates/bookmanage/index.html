@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block css %}
+
+    <link rel="stylesheet" href="/static/css/index.css">
+{% endblock css %}
+{% block body %}
+
+    {#    homepage#}
+    <section id="homepage">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-7" id="imgCol">
+                    <img src="/static/img/book2.png" class="img-fluid" alt="books">
+                </div>
+                <div class="col-md-5" id="loginCol">
+                    <div class="card">
+                        <div class="card-header">管理员登录</div>
+                        <form action="{% url "bookmanage:manager_login_handle" %}" method="post" id="loginForm">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="manager_name">用户名</label>
+                                <input type="text" class="form-control" id="manager_name" name="manager_name"
+                                       aria-describedby="textHelp" placeholder="请输入用户名">
+                                <small id="manage_id_help" class="form-text text-danger">请输入包含数字,字母或下划线的5到11位用户名</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="manager_pwd">密码</label>
+                                <input type="password" class="form-control" id="manager_pwd" name="manager_pwd"
+                                       placeholder="请输入密码">
+                                <small id="manage_pwd_help" class="form-text text-danger">请输入包含数字,字母或下划线的8到20位密码</small>
+
+                            </div>
+                            <button type="submit" class="btn btn-outline-secondary float-right" id="login">登录</button>
+
+                            <a role="button" href="{% url "bookmanage:manager_create" %}"
+                               class="btn btn-outline-secondary float-right">注册</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {#    homepage#}
+
+
+{% endblock %}
+{% block js %}
+    {#    <script type="text/javascript" src="/static/js/index.js"></script>#}
+    <script>
+
+        $(function () {
+
+            var $name = $('#manager_name');
+            var $pwd = $('#manager_pwd');
+            var err_name1 = true, err_pwd1 = true;
+            $name.bind("blur", function () {
+                check_name();
+            })
+
+            $pwd.bind('blur', function () {
+                check_pwd();
+            })
+            $name.bind('focus', function () {
+                $name.next().hide();
+            })
+            $pwd.bind('focus', function () {
+                $pwd.next().hide();
+            })
+
+            if ({{ err_pwd|safe }}==1
+        )
+            {
+                $pwd.next().html('密码错误').show();
+            }
+            if ({{ err_name|safe }}==1
+        )
+            {
+
+                $name.next().html('用户名错误').show();
+            }
+
+
+            $name.val({{ username|safe }});
+
+            var re_name = /^\w{5,15}$/i;
+
+            function check_name() {
+                if (re_name.test($name.val())) {
+                    // $name.next().hide();
+                    // err_name = false;
+                    var url = "/manager/exists/?name=" + $name.val();
+                    $.get(url, function (data) {
+                        var count = data['count'];
+                        if (count == 1) {
+                            err_name1 = false;
+                        }
+                        else {
+                            $name.next().html("用户名不存在").show();
+                            err_name1 = true;
+                        }
+                    })
+
+                }
+                else {
+                    $name.next().html('请输入包含数字,字母或下划线的5到11位用户名').show();
+                    err_name1 = true;
+                }
+
+            }
+
+            var re_pwd = /^\w{8,20}$/i;
+
+            function check_pwd() {
+                if (re_pwd.test($pwd.val())) {
+                    $pwd.next().hide();
+                    err_pwd1 = false;
+                }
+                else {
+                    $pwd.next().html('请输入包含数字,字母或下划线的8到20位密码').show();
+                    err_pwd1 = true;
+                }
+            }
+
+            $('#login').bind('click', function () {
+                if (err_name1 == true || err_pwd1 == true) {
+                    return false;
+                }
+
+            })
+            $(document).keyup(function (event) {
+                if (event.keyCode == 13) {
+                    $("#login").trigger("click");
+                }
+            });
+
+
+        })
+    </script>
+{% endblock js %}

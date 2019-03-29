@@ -1,0 +1,17 @@
+body {
+    font-family: 'Helvetica Neue', 'Helvetica', 'Microsoft Yahei', sans-serif;
+}
+/**
+base.html
+ */
+/*home*/
+#home{
+    border-bottom: 1px solid #ddd;
+}
+/*copyright*/
+#copyright {
+    border-top: 1px solid #ddd;
+    padding:40px;
+    font-size:12px;
+}
+

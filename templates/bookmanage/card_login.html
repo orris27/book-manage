@@ -1,0 +1,90 @@
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>Title</title>#}
+{#</head>#}
+{#<body>#}
+{#<form method="post" action="{% url "bookmanage:card_login_handle" %}">#}
+{#    {% csrf_token %}#}
+{#    <input type="text" name="card_id"/>#}
+{#    <input type="submit" name="Submit"/>#}
+{#</form>#}
+{#</body>#}
+{#</html>#}
+{% extends 'base.html' %}
+{% block css %}
+    <style>
+        #card_login .row > div {
+            padding: 50px;
+        }
+        #card_login #card_login_help{
+            display:none;
+        }
+        #card_login small{
+        }
+    </style>
+{% endblock css %}
+{% block body %}
+    {#    card_login#}
+    <section id="card_login">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="card">
+                        <div class="card-header">借书证登录</div>
+                        <div class="card-body">
+                            <form action="{% url "bookmanage:card_login_handle" %}" method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="card_name">名字</label>
+                                    <input type="text" id="card_name" name="card_name" class="form-control"
+                                           placeholder="请输入名字">
+                                    <small id="card_login_help" class="form-text text-danger">用户名不存在</small>
+                                </div>
+                                <button type="submit" id="cardBtn" class="btn btn-secondary float-right">登录</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {#    card_login#}
+
+    {#    <form method="post" action="{% url "bookmanage:card_login_handle" %}">#}
+    {#        {% csrf_token %}#}
+    {#        <input type="text" name="card_id"/>#}
+    {#        <input type="submit" name="Submit"/>#}
+    {#    </form>#}
+{% endblock body %}
+{% block js %}
+    <script>
+        $(function(){
+            var $cn=$('#card_name');
+            var err_name=true;
+            $cn.bind('focus',function(){
+                $cn.next().hide();
+            })
+            $cn.bind('blur',function(){
+                var url = "/card/exists/?card_name=" + $cn.val();
+                $.get(url,function(data){
+                    if(data.count==0)
+                    {
+                        $cn.next().html('对应借书证不存在').show();
+                        err_name=true;
+                    }
+                    else
+                    {
+                        err_name=false;
+                    }
+
+                })
+            })
+            $('#cardBtn').bind('click',function(){
+                if(err_name==true)
+                    return false;
+            })
+        })
+    </script>
+{% endblock js %}

@@ -1,0 +1,20 @@
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>Title</title>#}
+{#</head>#}
+{#<body>#}
+{#No this card!<br/>#}
+{#<form method="post" action="{% url "bookmanage:index" %}">#}
+{#    {% csrf_token %}#}
+{#    <input type="submit" value="back"/>#}
+{#</form>#}
+{#</body>#}
+{#</html>#}
+
+{% extends 'bookmanage/login_notexists.html' %}
+{% block content %}
+    No this card!
+
+{% endblock content %}

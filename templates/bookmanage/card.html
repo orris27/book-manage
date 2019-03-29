@@ -1,0 +1,274 @@
+
+{% extends 'base.html' %}
+{% block css %}
+    <style>
+        #card #user, #card #book {
+            padding: 50px;
+        }
+
+        #card #user h3 {
+            margin-bottom: 20px;
+        }
+
+        #card button {
+            margin-left: 20px;
+        }
+
+        #card .btn-outline-secondary {
+            margin: 0;
+            padding: 1px 10px;
+        }
+
+        #card .borrow {
+        }
+
+        #card .return {
+        }
+
+        #card .above {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+{% endblock css %}
+{% block body %}
+
+    {#    card#}
+    <section id="card">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6" id="user">
+                    <div class="row">
+                        <div class="col-md-8"><h3>您好,{{ card_name_org }}</h3></div>
+                        <div class="col-md-4">
+                            <a href="{% url "bookmanage:card_exit" %}" role="button"
+                               class="btn btn-secondary above">退出</a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">已借书籍</div>
+                        <div class="card-body">
+                            <table class="table" id="borrowed">
+                                <thead>
+                                <tr>
+                                    <th>id</th>
+                                    <th>书名</th>
+                                    <th>作者</th>
+                                    <th>总量</th>
+                                    <th>库存</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody id="brw_body">
+
+                                </tbody>
+                            </table>
+                            <div id="page_con"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6" id="book">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-group form-inline">
+                                <input type="text" class="form-control" id="qt" name="qt" placeholder="请输入书名">
+                                <button class="btn btn-secondary above" type="button" id="queryBtn">查询</button>
+                                <button class="btn btn-secondary above" type="button" id="allBtn">查看全部</button>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>id</th>
+                                    <th>书名</th>
+                                    <th>作者</th>
+                                    <th>总量</th>
+                                    <th>库存</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody id="bt_query">
+
+                                </tbody>
+                            </table>
+                            <div id="page_con2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {#    card#}
+
+    {{ message|default:"" }}
+{% endblock body %}
+{% block js %}
+    <script>
+        $(function () {
+            set_all();
+
+            var $brw = $('#brw_body');
+
+            var url = "/card/books/?card_name=" +{{ card_name|safe }};
+            var l = []
+            $.get(url, function (data) {
+                $('#page_con').empty();
+                $brw.empty();
+                l.splice(0, l.length);
+                if (data.data.length == 0)
+                    return;
+                $.each(data.data, function (index, book) {
+                    l[index] = "<tr><td>" + book['id'] + "</td><td>" + book['title'] + "</td><td>" + book['author'] + "</td><td>" + book['total'] + "</td><td>" + book['stock'] + "</td><td><button class='btn btn-outline-secondary return' type='button' id='brwBtn'>还书</button></td></tr>";
+                })
+                $('#page_con').pagination({
+                    dataSource: l,
+                    pageSize: 10,
+                    showGoInput: true,
+                    showGoButton: true,
+                    callback: function (data, pagination) {
+                        var html = "";
+                        var pageSize = pagination.pageSize;
+                        for (var i = pageSize * (pagination.pageNumber - 1); i < pageSize * pagination.pageNumber; i++) {
+                            html += l[i];
+                        }
+                        $brw.html(html);
+                        $('.return').bind('click', function () {
+                            var j = {
+                                "option_card": "return",
+                                "book_id": $(this).parent().siblings().eq(0).text(),
+                                "csrfmiddlewaretoken": '{{csrf_token}}'
+                            };
+                            $.post('/card/handle/', j, function () {
+                                location.reload();
+                            })
+                        })
+                    }
+                })
+            })
+
+            //query by title
+            var $bt_query = $("#bt_query");
+            var bl = []
+            var $query_btn = $('#queryBtn');
+            $query_btn.bind('click', function () {
+                var url = "/booktitle/query/?title=" + $('#qt').val();
+
+                $.get(url, function (data) {
+
+
+                    $bt_query.empty();
+                    $('#page_con2').empty();
+                    bl.splice(0, bl.length);
+                    if (data.data.length == 0)
+                        return;
+                    $.each(data.data, function (index, book) {
+                        bl[index] = "<tr><td>" + book['id'] + "</td><td>" + book['title'] + "</td><td>" + book['author'] + "</td><td>" + book['total'] + "</td><td>" + book['stock'] + "</td><td><button class='btn btn-outline-secondary borrow' type='button' id='brwBtn'>借书</button></td></tr>";
+                    })
+                    $('#page_con2').pagination({
+                        dataSource: bl,
+                        pageSize: 10,
+                        showGoInput: true,
+                        showGoButton: true,
+                        callback: function (data, pagination) {
+                            var html = "";
+                            var pageSize = pagination.pageSize;
+                            for (var i = pageSize * (pagination.pageNumber - 1); i < pageSize * pagination.pageNumber; i++) {
+                                html += bl[i];
+                            }
+                            $bt_query.html(html);
+                            $('.borrow').bind('click', function () {
+                                var url = '/bookid_cardid/exists/?book_id=' + $(this).parent().siblings().eq(0).text();
+                                var $this = $(this);
+                                $.get(url, function (data) {
+                                    if (data.data == '1') {
+                                        alert('借阅失败,您已经借过该书啦!');
+                                        return;
+                                    }
+                                    if ($this.parent().prev().text() == '0') {
+                                        alert('借阅失败,已经没有库存啦!')
+                                        return;
+                                    }
+                                    var j = {
+                                        "option_card": "borrow",
+                                        "book_id": $this.parent().siblings().eq(0).text(),
+                                        "csrfmiddlewaretoken": '{{csrf_token}}'
+                                    };
+                                    $.post('/card/handle/', j, function () {
+                                        location.reload();
+                                    })
+                                })
+
+                            })
+                        }
+                    })
+                })
+            })
+
+            //all
+            $('#allBtn').bind('click', set_all);
+
+            function set_all() {
+                var url = "/books/query/";
+
+                $.get(url, function (data) {
+                    $('#page_con2').empty();
+                    $bt_query.empty();
+                    bl.splice(0, bl.length);
+                    if (data.data.length == 0)
+                        return;
+                    $.each(data.data, function (index, book) {
+                        bl[index] = "<tr><td>" + book['id'] + "</td><td>" + book['title'] + "</td><td>" + book['author'] + "</td><td>" + book['total'] + "</td><td>" + book['stock'] + "</td><td><button class='btn btn-outline-secondary borrow' type='button' id='brwBtn'>借书</button></td></tr>";
+                    })
+                    $('#page_con2').pagination({
+                        dataSource: bl,
+                        pageSize: 10,
+                        showGoInput: true,
+                        showGoButton: true,
+                        callback: function (data, pagination) {
+                            var html = "";
+                            var pageSize = pagination.pageSize;
+                            for (var i = pageSize * (pagination.pageNumber - 1); i < pageSize * pagination.pageNumber; i++) {
+                                html += bl[i];
+                            }
+                            $bt_query.html(html);
+                            $('.borrow').bind('click', function () {
+                                var url = '/bookid_cardid/exists/?book_id=' + $(this).parent().siblings().eq(0).text();
+                                var $this = $(this);
+                                $.get(url, function (data) {
+                                    if (data.data == '1') {
+                                        alert('借阅失败,您已经借过该书啦!');
+                                        return;
+                                    }
+                                    if ($this.parent().prev().text() == '0') {
+                                        alert('借阅失败,已经没有库存啦!')
+                                        return;
+                                    }
+                                    var j = {
+                                        "option_card": "borrow",
+                                        "book_id": $this.parent().siblings().eq(0).text(),
+                                        "csrfmiddlewaretoken": '{{csrf_token}}'
+                                    };
+                                    $.post('/card/handle/', j, function () {
+                                        location.reload();
+                                    })
+                                })
+
+                            });
+                        }
+                    })
+                })
+            }
+
+            function check_already_borrowed(book_id) {
+                console.log($('#brw_body').children().children().eq(0).text());
+            }
+
+            $(document).keyup(function (event) {
+                if (event.keyCode == 13&&$('#qt').is(':focus')) {
+                    $("#queryBtn").trigger("click");
+                }
+            });
+
+        });
+    </script>
+{% endblock js %}

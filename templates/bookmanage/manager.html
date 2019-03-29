@@ -1,0 +1,259 @@
+
+{% extends 'base.html' %}
+{% block css %}
+    <style>
+        #manager .container {
+            padding: 50px;
+        }
+
+        #manager h3 {
+            font-size: 19px;
+            margin-bottom: 20px;
+            text-indent: 10px;
+        }
+
+        #manager #nav-tabContent > div {
+            padding: 50px;
+
+        }
+
+        #manager .delete {
+            padding: 0px 10px;
+        }
+
+    </style>
+{% endblock css %}
+{% block body %}
+
+    {#    manager#}
+    <section id="manager">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h3>您好,{{ manager_name }}</h3>
+                    <div class="list-group" id="list-tab">
+                        <a href="#" class="list-group-item list-group-item-action active single-book">单本入库</a>
+                        <a href="#" class="list-group-item list-group-item-action books">批量入库</a>
+                        <a href="#" class="list-group-item list-group-item-action card">添加借书证</a>
+                        <a href="#" class="list-group-item list-group-item-action card">借书证管理</a>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                            <a class="nav-item nav-link active single-book" id="nav_single_book" data-toggle="tab"
+                               href="#tab_single_book"
+                               role="tab">单本入库</a>
+                            <a class="nav-item nav-link books" id="nav_books" data-toggle="tab" href="#tab_books"
+                               role="tab">批量入库</a>
+                            <a class="nav-item nav-link card" id="nav-contact-tab" data-toggle="tab" href="#nav-contact"
+                               role="tab">添加借书证</a>
+                            <a class="nav-item nav-link card" id="nav-card-tab" data-toggle="tab" href="#tab_card"
+                               role="tab">借书证管理</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade active show" id="tab_single_book" role="tabpanel">
+                            <form action="{% url "bookmanage:book_add" %}" method="post">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="title">书名</label>
+                                        <input type="text" class="form-control" name="title" id="title"
+                                               placeholder="请输入书名">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="author">作者</label>
+                                        <input type="text" class="form-control" name="author" id="author"
+                                               placeholder="请输入作者">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="press">出版社</label>
+                                        <input type="text" class="form-control" name="press" id="press"
+                                               placeholder="请输入出版社">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="year">出版年份</label>
+                                        <input type="text" class="form-control" name="year" id="year"
+                                               placeholder="请输入出版年份">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="cat">类别</label>
+                                        <input type="text" class="form-control" name="cat" id="cat" placeholder="请输入类别">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="price">价格</label>
+                                        <input type="text" class="form-control" name="price" id="price"
+                                               placeholder="请输入价格">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="total">总量</label>
+                                        <input type="text" class="form-control" name="total" id="total"
+                                               placeholder="请输入总量">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="stock">库存</label>
+                                        <input type="text" class="form-control" name="stock" id="stock"
+                                               placeholder="请输入库存">
+                                    </div>
+                                </div>
+                                <button type="submit" id="bookBtn" class="btn btn-secondary float-right">添加图书</button>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="tab_books" role="tabpanel">
+                            <form action="{% url 'bookmanage:manager_add_books' %}" method="post"
+                                  enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" name="csv" id="csv">
+                                        <label class="custom-file-label" for="inputGroupFile04">选择一个csv文件</label>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-secondary" id="fileBtn" type="submit">上传</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="nav-contact" role="tabpanel">
+                            <form action="{% url "bookmanage:manager_add_card" %}" method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label for="card_name">姓名</label>
+                                        <input type="text" class="form-control" id="card_name" name="card_name"
+                                               aria-describedby="emailHelp" placeholder="请输入姓名">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="card_dept">部门</label>
+                                        <input type="text" class="form-control" id="card_dept" name="card_dept"
+                                               placeholder="请输入所在部门">
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="student" name="card_type" value="student"
+                                               class="custom-control-input" checked="checked">
+                                        <label class="custom-control-label" for="student">student</label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="teacher" name="card_type" value="teacher"
+                                               class="custom-control-input">
+                                        <label class="custom-control-label" for="teacher">teacher</label>
+                                    </div>
+
+                                    <button type="submit" id="cardBtn" class="btn btn-secondary float-ri">添加</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" role="tabpanel" id="tab_card">
+                            <div class="card">
+                                <div class="card-header">借书证</div>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>id</th>
+                                            <th>名字</th>
+                                            <th>部门</th>
+                                            <th>类型</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="card"></tbody>
+                                    </table>
+                                    <div id="page_con"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock body %}
+{% block js %}
+    <script>
+        $(function () {
+
+
+            $('#list-tab').delegate('a', 'click', function () {
+                {#alert($(this).index());#}
+                $(this).addClass('active').siblings().removeClass('active');
+                $('#nav-tab').children().eq($(this).index()).click();
+            })
+            $('#nav-tab').delegate('a', 'click', function () {
+                $('#list-tab').children().eq($(this).index()).addClass('active').siblings().removeClass('active');
+            })
+            $('#fileBtn').bind('click', function () {
+                alert('添加图书成功!');
+            })
+            $('#bookBtn').bind('click', function () {
+                alert('添加图书成功!');
+            })
+            $('#cardBtn').bind('click', function () {
+                alert('添加借书证成功!');
+            })
+
+
+            var $card = $('#card');
+            var l = [];
+            $.get('/cards/query/', function (data) {
+                $('#page_con').empty();
+                $card.empty();
+                l.splice(0, l.length);
+                if (data.data.length == 0)
+                    return;
+
+                $.each(data.data, function (index, card) {
+                    l[index] = "<tr><td>" + card['id'] + "</td><td>" + card['name'] + "</td><td>" + card['department'] + "</td><td>" + (card['type'] ? "teacher" : "student") + "</td><td><button type='button' class='btn btn-outline-secondary delete'>删除</button></td></tr>";
+
+
+                })
+                $('#page_con').pagination({
+                    dataSource: l,
+                    pageSize: 10,
+                    showGoInput: true,
+                    showGoButton: true,
+                    callback: function (data, pagination) {
+                        var html = "";
+                        var pageSize = pagination.pageSize;
+                        for (var i = pageSize * (pagination.pageNumber - 1); i < pageSize * pagination.pageNumber; i++) {
+                            html += l[i];
+                        }
+                        $card.html(html);
+                        $('.delete').bind('click', function () {
+                            var card_id=$(this).parent().siblings().eq(0).text();
+                            var b_url = '/card/borrowed/?card_id=' + card_id;
+                            $.get(b_url, function (data) {
+                                console.log(data.data);
+                                if (data.data != 0) {
+                                    alert('不能删除,该借书证还有书本未归还!');
+                                }
+                                else {
+                                    var url = '/card/delete/?card_id=' + card_id;
+                                    $.get(url, function () {
+                                        alert('删除成功!');
+                                        location.reload();
+                                    })
+                                }
+
+                            })
+
+                        })
+                    }
+                })
+
+
+            })
+
+
+        })
+    </script>
+{% endblock %}

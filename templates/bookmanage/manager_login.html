@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form method="post" action="{% url "bookmanage:manager_login_handle" %}">
+    {% csrf_token %}
+    <input type="text" name="manager_id"/>
+    <input type="password" name="manager_pwd"/>
+    <input type="submit" value="Submit"/>
+</form>
+</body>
+</html>
