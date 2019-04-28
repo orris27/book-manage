@@ -8,9 +8,8 @@ systemctl start mysql
 ```
 2. Load mysql data to the database
 ```
-mysql>create database bookmanage;
+mysql>create database bookmanage default charset utf8;
 mysql>use bookmanage;
-mysql>set names utf8;
 mysql>source data/bookmanage.sql;
 ```
 3. Run server
