@@ -81,7 +81,7 @@ DATABASES = {
         'NAME': 'bookmanage',
         'HOST':'127.0.0.1',
         'USER':'root',
-        'PASSWORD':'serena2ash',
+        'PASSWORD':'xxxxx',
         'PORT':'3306',
     }
 }
